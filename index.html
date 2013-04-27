@@ -1,27 +1,21 @@
 <html>
   <head>
     <title>Dumper - Leap</title>
+    <script src="js/jquery.js"></script>
     <script src="js/leap.js"></script>
-    <script>
-      var pausedFrame = null;
-      var latestFrame = null;
-      window.onkeypress = function(e) {
-        if (e.charCode == 32) {
-          if (pausedFrame == null) {
-            pausedFrame = latestFrame;
-          } else {
-            pausedFrame = null;
-          }
-        }
+    <script src="js/main.js"></script>
+    <style>
+      #timeline {
+        //position: absolute;
+        width: 8192;
+        height: 800;
+       background-image: url('data/background.png');
+       background-size: 100%;
       };
-      var controller = new Leap.Controller({enableGestures: true});
-      controller.loop(function(frame) {
-        latestFrame = frame;
-        document.getElementById('out').innerHTML = (pausedFrame ? "<p><b>PAUSED</b></p>" : "") + "<div>"+(pausedFrame || latestFrame).dump()+"</div>";
-      });
-    </script>
+    </style>
   </head>
   <body>
+    <div id="timeline"></div>
     <div id="out"></div>
     <div id="log"></div>
   </body>
