@@ -7,15 +7,26 @@
     <style>
       #timeline {
         //position: absolute;
-        width: 8192;
-        height: 800;
        background-image: url('data/background.png');
-       background-size: 100%;
-      };
+       //background-size: 100%;
+      }
+
+      .timeline-element {
+       background-image: url('data/background.png');
+        width: 512px;
+        height: 800px;
+      float: left;
+      }
+
+      .selected {
+       background-image: url(''); //rgba(255,0,255,0.7);
+      }
+
     </style>
   </head>
   <body>
-    <div id="timeline"></div>
+    <div id="timeline">
+    </div>
     <div id="out"></div>
     <div id="log"></div>
   </body>
