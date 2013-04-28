@@ -66,7 +66,7 @@ leapAndTime.getStream = function getStream() {
       items.forEach(function (item, index, array) {
         item.from.url = ids[item.from.id];
         if (item.picture) {
-          $('#timeline').append(createItemElement(item.full_picture, item.from.url, item.message));
+          $('#timeline').append(createItemElement(item.id, item.full_picture, item.from.url, item.message));
         }
       });
 
@@ -80,8 +80,46 @@ leapAndTime.getStream = function getStream() {
             AppState.TimelineView.selectCurrentItem();
         });
 
+      // Register click event for displaying object detail
+      $('.timeline-element').on('click', function (e) {
+        self.getObject($(this).attr('data-id'));
+      });
+
       self.items = items;
     });
+  });
+};
+
+// Get individual object
+// ---------------------
+leapAndTime.getObject = function getObject(id) {
+  var self = this;
+
+  FB.api('/' + id + '?fields=full_picture,message,likes,actions', function (res) {
+    // console.log(res);
+    var html = '' +
+      '<div class="entry-detail" data-id="' + res.id + '">' +
+        '<img src="' + res.full_picture + '">' +
+        '<div class="description">' + res.message + '</div>' +
+        '<div class="actions">' +
+          '<div class="likes">' + (res.likes ? res.likes.count : 0) +'</div>' +
+        '</div>' +
+      '<div>';
+    $('#entry').append(html);
+    AppState.switchMode('EntryView');
+
+    $('#entry .entry-detail').on('click', function (e) {
+      self.like($(this).attr('data-id'));
+    });
+  });
+};
+
+// Like action
+// -----------
+leapAndTime.like = function like(id) {
+  FB.api('/' + id + '/likes', 'post', function (res) {
+    // TODO: Add feedback
+    console.log('like it');
   });
 };
 
