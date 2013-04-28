@@ -18,6 +18,14 @@ leapAndTime.login = function login() {
   }, { scope: 'read_stream,publish_stream,publish_actions,share_item' });
 };
 
+// Logout
+// ------
+leapAndTime.logout = function logout() {
+  FB.logout(function(res) {
+    console.log('User is now logged out');
+  });
+};
+
 // Get data from Facebook
 // ----------------------
 leapAndTime.getStream = function getStream() {
@@ -44,6 +52,7 @@ window.fbAsyncInit = function() {
   FB.getLoginStatus(function (res) {
     if (res.status === 'connected') {
       // connected
+      document.getElementById('fb-logout').style.display = 'block';
       leapAndTime.getStream();
     } else if (res.status === 'not_authorized') {
       // not_authorized
@@ -51,6 +60,7 @@ window.fbAsyncInit = function() {
     } else {
       // not_logged_in
       leapAndTime.login();
+      document.getElementById('fb-logout').style.display = 'block';
     }
   });
 };
