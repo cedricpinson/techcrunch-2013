@@ -25,7 +25,7 @@ Timeline.prototype = {
         this._targetPosition = this.clampMotion(this._targetPosition);
 
         // we should take care about the page size for the smooth stop of the scroll
-        var displacement = (this._targetPosition - this._virtualCursor) * 0.05;
+        var displacement = (this._targetPosition - this._virtualCursor) * 0.03;
         this._virtualCursor += displacement;
         
         this._virtualCursor = this.clampMotion(this._virtualCursor);
@@ -41,7 +41,6 @@ Timeline.prototype = {
         }
 
         AppState.switchMode('EntryView');
-
     },
 
     timelineSelectItem: function(frame) {

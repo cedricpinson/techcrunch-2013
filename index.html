@@ -21,6 +21,8 @@
   	#timeline {
   		margin-top: 60px;
   		margin-left: 60px;
+        transition: all 1s ease-out;
+        
     }
 
     #entry {
@@ -30,9 +32,10 @@
     .timeline-element {
     	margin: 20px 80px;
         height: 700px;
-        width: 800px;
+        width: 680px;
       	float: left;
       	position: relative;
+        opacity: 0.6;
     }
     .timeline-element img {
     	height: 500px;
@@ -52,7 +55,7 @@
 		color: #BDBDBD;		
 	}
     .selected {
-    	background-image: url(''); //rgba(255,0,255,0.7);
+    	opacity: 1.0;
   	}
   	.avatar {
   		position:absolute;

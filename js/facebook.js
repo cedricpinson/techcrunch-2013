@@ -102,6 +102,16 @@ leapAndTime.getStream = function getStream() {
           }
         });
 
+        // enable to click on elements if no leap motion
+        $('.timeline-element').hover(function() {
+          if ( ! $(this).hasClass("selected"))
+            $(this).addClass('selected');
+        }, function() {
+          $(this).removeClass('selected');
+        }).click(function() {
+          AppState.TimelineView.selectCurrentItem();
+        });
+
         // Register click event for displaying object detail
         $('.timeline-element').on('click', function (e) {
           self.getObject($(this).attr('data-id'));

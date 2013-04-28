@@ -29,14 +29,14 @@ var AppState = {
             setTimeout(function() {
                 self.ViewMode = mode;
             },500);
-            $('#timeline').hide();
-            $('#entry').show();
+            $('#timeline').fadeOut(500);
+            $('#entry').fadeIn(500);
         } else if (mode === 'TimelineView') {
             setTimeout(function() {
                 self.ViewMode = mode;
             },500);
-            $('#timeline').show();
-            $('#entry').hide();
+            $('#timeline').fadeIn(500);
+            $('#entry').fadeOut(500);
         }
         this.ViewMode = 'transition';
     }
@@ -53,7 +53,7 @@ $(document).ready(function() {
         return '<div class="timeline-element" data-id="' + id + '"><img src="' + media +'"><br>'+  '<div class="avatar"><img src="' + imageAvatar + '"></div> <div class="description">' + description + '</div></div>';
     };
 
-    var elementWidth = 800;
+    var elementWidth = 840;
     // initalize timeline
     AppState.TimelineView = new Timeline();
     AppState.EntryView = new Entry();
@@ -61,6 +61,7 @@ $(document).ready(function() {
     var nb = 25;
     width = nb*elementWidth;
     $('#timeline').width(width);
+
 
     AppState.TimelineView._width = width;
     AppState.TimelineView._elementWidth = elementWidth;
