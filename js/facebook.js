@@ -82,8 +82,24 @@ leapAndTime.getStream = function getStream() {
 // Get individual object
 // ---------------------
 leapAndTime.getObject = function getObject(id) {
-  FB.api('/' + id, function (res) {
-    console.log(res);
+  var self = this;
+
+  FB.api('/' + id + '?fields=full_picture,message,likes,actions', function (res) {
+    // console.log(res);
+    var html = '' +
+      '<div class="entry-detail" data-id="' + res.id + '">' +
+        '<img src="' + res.full_picture + '">' +
+        '<div class="description">' + res.message + '</div>' +
+        '<div class="actions">' +
+          '<div class="likes">' + (res.likes ? res.likes.count : 0) +'</div>' +
+        '</div>' +
+      '<div>';
+    $('#entry').append(html);
+    AppState.switchMode('EntryView');
+
+    $('#entry .entry-detail').on('click', function (e) {
+      self.like($(this).attr('data-id'));
+    });
   });
 };
 
@@ -92,6 +108,7 @@ leapAndTime.getObject = function getObject(id) {
 leapAndTime.like = function like(id) {
   FB.api('/' + id + '/likes', 'post', function (res) {
     // TODO: Add feedback
+    console.log('like it');
   });
 };
 
