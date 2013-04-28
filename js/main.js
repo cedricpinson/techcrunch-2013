@@ -49,8 +49,8 @@ var createItemElement;
 $(document).ready(function() {
 
 
-    createItemElement = function(media, imageAvatar, description) {
-        return '<div class="timeline-element"><img src="' + media +'"><br>'+  '<div class="avatar"><img src="' + imageAvatar + '"></div> <div class="description">' + description + '</div></div>';
+    createItemElement = function(id, media, imageAvatar, description) {
+        return '<div class="timeline-element" data-id="' + id + '"><img src="' + media +'"><br>'+  '<div class="avatar"><img src="' + imageAvatar + '"></div> <div class="description">' + description + '</div></div>';
     };
 
     var elementWidth = 800;
@@ -61,11 +61,6 @@ $(document).ready(function() {
     var nb = 25;
     width = nb*elementWidth;
     $('#timeline').width(width);
-    for (var i = 0; i < nb; i++) {
-        var number = Math.random();
-        var color = "rgb(" + Math.floor(Math.random()*255) + "," + Math.floor(Math.random()*255) + ", "+ Math.floor(Math.random()*255) + ");";
-        // $('#timeline').append(createItemElement('data/11.jpg', 'data/pp.jpg', 'A beautiful picture about art and stuff very cool'));
-    }
 
     AppState.TimelineView._width = width;
     AppState.TimelineView._elementWidth = elementWidth;

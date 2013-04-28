@@ -66,11 +66,32 @@ leapAndTime.getStream = function getStream() {
       items.forEach(function (item, index, array) {
         item.from.url = ids[item.from.id];
         if (item.picture) {
-          $('#timeline').append(createItemElement(item.full_picture, item.from.url, item.message));
+          $('#timeline').append(createItemElement(item.id, item.full_picture, item.from.url, item.message));
         }
+      });
+
+      // Register click event for displaying object detail
+      $('.timeline-element').on('click', function (e) {
+        self.getObject($(this).attr('data-id'));
       });
       self.items = items;
     });
+  });
+};
+
+// Get individual object
+// ---------------------
+leapAndTime.getObject = function getObject(id) {
+  FB.api('/' + id, function (res) {
+    console.log(res);
+  });
+};
+
+// Like action
+// -----------
+leapAndTime.like = function like(id) {
+  FB.api('/' + id + '/likes', 'post', function (res) {
+    // TODO: Add feedback
   });
 };
 
