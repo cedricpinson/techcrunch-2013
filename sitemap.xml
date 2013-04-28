@@ -25,6 +25,12 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>http://leapandtime.com/images/login_button.png</loc>
+    <lastmod>2013-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>http://leapandtime.com/images/thumbs_up.png</loc>
     <lastmod>2013-04-28</lastmod>
     <changefreq>weekly</changefreq>

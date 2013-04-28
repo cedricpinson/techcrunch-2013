@@ -1,8 +1,8 @@
 <manifest alg="2" build="8" opt="false">
   <folder name="css">
     <file name="site_global.css" crc="52916846"/>
-    <file name="index.css" crc="64427099" ref="index"/>
-    <file name="iefonts_index.css" crc="182102421" ref="index"/>
+    <file name="index.css" crc="299145827" ref="index"/>
+    <file name="iefonts_index.css" crc="3873493748" ref="index"/>
   </folder>
   <folder name="scripts">
     <file name="jquery-1.8.3.min.js" crc="3828297711" ref="index"/>
@@ -16,6 +16,7 @@
     <file name="leap_and_time_270.png" crc="4185653597" ref="index"/>
     <file name="wallpaper.png" crc="25026723" ref="index"/>
     <file name="u253-7.png" crc="189640520" ref="index"/>
+    <file name="login_button.png" crc="4196743597" ref="index"/>
     <file name="thumbs_up.png" crc="4042896703" ref="index"/>
     <file name="u76-4.png" crc="4121339980" ref="index"/>
     <file name="explore_gesture.png" crc="4161653149" ref="index"/>
@@ -33,5 +34,5 @@
     <file name="jorge-martinez.png" crc="4124862560" ref="index"/>
     <file name="chao_huang.png" crc="51464240" ref="index"/>
   </folder>
-  <file name="index.html" crc="4291145057" mt="1367150730960"/>
+  <file name="index.html" crc="402054661" mt="1367154825816"/>
 </manifest>
