@@ -126,7 +126,20 @@ leapAndTime.getObject = function getObject(id, type) {
   var fields = (type === 'photo' ? 'images,source,likes,name' : 'full_picture,message,likes,actions');
 
   FB.api('/' + id + '?fields=' + fields, function (res) {
-    // console.log(res);
+    var ids = {};
+    if (res.likes && res.likes.data && res.likes.data.length) {
+/*      console.log(res.likes.data);
+      res.likes.data.forEach(function (item, index, array) {
+        console.log(item);
+        ids[item.id] = {
+          method: 'GET',
+          relative_url: item.from.id + '?fields=id,name,picture',
+        };
+      });
+
+      console.log(ids);*/
+    }
+
     var html = '' +
       '<div class="entry-detail" data-id="' + res.id + '">' +
         '<div id="left-part">' +
@@ -135,11 +148,11 @@ leapAndTime.getObject = function getObject(id, type) {
         '</div>' +
         '<div id="right-part">' +
           '<div class="actions">' +
-            '<div class="likes">' + (res.likes ? res.likes.data.length : 0) +'</div>' +
+            '<div class="likes"><span id="like-count">' + (res.likes ? res.likes.data.length : 0) +'</span> Likes</div>' +
           '</div>' +
         '</div>' +
       '<div>';
-    $('#entry').append(html);
+    $('#entry').html(html);
     AppState.switchMode('EntryView');
 
     $('#entry .entry-detail').on('click', function (e) {
@@ -154,6 +167,8 @@ leapAndTime.like = function like(id) {
   FB.api('/' + id + '/likes', 'post', function (res) {
     // TODO: Add feedback
     console.log('Just like it');
+    var count = parseInt($('#like-count').text(), 10)
+    $('#like-count').html(count + 1);
   });
 };
 
