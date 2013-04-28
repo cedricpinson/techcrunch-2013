@@ -7,6 +7,7 @@ var Entry = function() {
 
 Entry.prototype = {
     init: function(content) {
+        this._id = content;
         $('#right-part').empty();
         var nbComments = 5;
         for (var i = 0; i < nbComments; i++) {
@@ -48,7 +49,7 @@ Entry.prototype = {
         $('.overlay').fadeOut(1000); //, 'easeInOutCubic');
         this._liked = true;
         // console.log("like " + txt);
-        leapAndTime.like();
+        leapAndTime.like(this._id);
     },
 
     goBack: function() {

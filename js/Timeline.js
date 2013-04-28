@@ -47,7 +47,7 @@ Timeline.prototype = {
             console.log("nothing selected");
         }
 
-        AppState.EntryView.init();
+        AppState.EntryView.init(element.attr('data-id'));
         AppState.switchMode('EntryView');
 
         leapAndTime.getObject(element.attr('data-id'), element.attr('data-type'));

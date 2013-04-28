@@ -129,13 +129,17 @@ leapAndTime.getObject = function getObject(id, type) {
     // console.log(res);
     var html = '' +
       '<div class="entry-detail" data-id="' + res.id + '">' +
-        '<img src="' + (res.images && res.images[0].source || res.source || res.full_picture) + '">' +
-        '<div class="description">' + (res.message || res.name) + '</div>' +
-        '<div class="actions">' +
-          '<div class="likes">' + (res.likes ? res.likes.data.length : 0) +'</div>' +
+        '<div id="left-part">' +
+          '<img src="' + (res.images && res.images[0].source || res.source || res.full_picture) + '">' +
+          '<div class="description">' + (res.message || res.name) + '</div>' +
+        '</div>' +
+        '<div id="right-part">' +
+          '<div class="actions">' +
+            '<div class="likes">' + (res.likes ? res.likes.data.length : 0) +'</div>' +
+          '</div>' +
         '</div>' +
       '<div>';
-    $('#left-part').append(html);
+    $('#entry').append(html);
     AppState.switchMode('EntryView');
 
     $('#entry .entry-detail').on('click', function (e) {
