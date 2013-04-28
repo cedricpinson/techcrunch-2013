@@ -8,7 +8,7 @@ window.requestAnimFrame = (function(){
           };
 })();
 
-
+var viewMode = 'timeline';
 var pausedFrame = null;
 var latestFrame = null;
 var previousFrame = null;
@@ -27,11 +27,11 @@ var lastPosition = 0;
 var targetPosition = 0;
 var width = 8192;
 var selected = undefined;
-var elementWidth = 512;
+var elementWidth = 800;
 
 $(document).ready(function() {
     var nb = 25;
-    width = nb*512;
+    width = nb*elementWidth;
     $('#timeline').width(width);
     for (var i = 0; i < nb; i++) {
         var number = Math.random();
@@ -50,8 +50,15 @@ var clampMotion = function(value) {
     return v;
 };
 
-var leapSelectElement = function(frame) {
-    
+var selectCurrentItem = function() {
+    var element = $('.selected');
+
+    if (element.length > 0) {
+        console.log("selected " + element[0]);
+    } else {
+        console.log("nothing selected");
+    }
+
 };
 
 var leapGetPosition = function(frame) {
@@ -63,58 +70,67 @@ var leapGetPosition = function(frame) {
     targetPosition = clampMotion(targetPosition);
 
     // we should take care about the page size for the smooth stop of the scroll
-
     var displacement = (targetPosition - virtualCursor) * 0.05;
     virtualCursor += displacement;
     
     virtualCursor = clampMotion(virtualCursor);
 };
 
-var controller = new Leap.Controller({enableGestures: 'swipe'});
-controller.loop(function(frame) {
-    latestFrame = frame;
-    var display = pausedFrame || latestFrame;
-    var gestures = display.gestures;
 
-    if (frame.valid) {
-        leapGetPosition(frame);
-    }
-
+var timelineSelectItem = function(frame) {
+    var gestures = frame.gestures;
     var displayGesture = '';
     if (gestures.length > 0 ) {
         for (var i = 0; i < gestures.length; i++) {
             //console.log(gestures[i].type);
-            if (gestures[i].type === "swipe" && gestures[i].state === 'start') {
-//                    
-                //console.log(gestures[i].state);
-//                debugger;
-                console.log(gestures[i].id + " swipe " + gestures[i].speed + " " + gestures[i].direction[0]);
+            console.log(gestures[i].type);
+            var type = gestures[i].type;
+            if (type === "keyTap" || type === "screenTap") {
+                selectCurrentItem();
+                break;
             }
         }
-        //displayGesture = gestures[0];
     }
-    previousFrame = frame;
-    document.getElementById('out').innerHTML = (pausedFrame ? "<p><b>PAUSED</b></p>" : "") + "<div>"+display.dump()+ "<br> " +displayGesture + "</div>";
+};
+
+
+var controller = new Leap.Controller({enableGestures: 'swipe'});
+controller.loop(function(frame) {
+    if (!previousFrame)
+        previousFrame = frame;
+        
+    if (frame.valid) {
+        if (viewMode === 'timeline') {
+            leapGetPosition(frame);
+            timelineSelectItem(frame);
+        }
+
+
+        previousFrame = frame;
+    }
 });
 
 // usage:
 // instead of setInterval(render, 16) ....
 var render = function() {
-    if (Math.abs(targetPosition - virtualCursor) > 0.001) {
 
-        // used to select an element
-        var center = window.innerWidth/2;
-        
+    if (viewMode === 'timeline') {
 
-        var selected = (virtualCursor+center)/elementWidth;
-        selected = Math.floor(selected);
-        
-        var elements = $(".timeline-element");
-        elements.removeClass('selected');
-        $(elements[selected]).addClass('selected');
+        if (Math.abs(targetPosition - virtualCursor) > 0.001) {
 
+            // used to select an element
+            var center = window.innerWidth/2;
 
-        $('html, body').scrollLeft(virtualCursor);
+            var selected = (virtualCursor+center)/elementWidth;
+            selected = Math.floor(selected);
+            
+            var elements = $(".timeline-element");
+            elements.removeClass('selected');
+            $(elements[selected]).addClass('selected');
+
+            
+            $('html, body').scrollLeft(virtualCursor);
+        }
     }
 };
 
