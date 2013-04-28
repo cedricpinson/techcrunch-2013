@@ -15,7 +15,7 @@ leapAndTime.login = function login() {
     } else {
       // TODO: cancelled
     }
-  }, { scope: 'read_stream,publish_stream,publish_actions,share_item' });
+  }, { scope: 'user_photos,user_likes,read_stream,publish_stream,publish_actions,share_item' });
 };
 
 // Logout
@@ -31,9 +31,10 @@ leapAndTime.logout = function logout() {
 leapAndTime.getStream = function getStream() {
   var self = this;
 
-  FB.api('/me/home?fields=full_picture,object_id,picture,from,message', function (res) {
+  FB.api('/me/home?fields=type,full_picture,object_id,picture,from,message', function (res) {
     var items = res.data
       , ids   = {}
+      , pics  = {}
       , batch = []
       ;
 
@@ -43,6 +44,13 @@ leapAndTime.getStream = function getStream() {
         method: 'GET',
         relative_url: item.from.id + '?fields=id,picture',
       };
+
+      if (item.type === 'photo') {
+        pics[index] = {
+          method: 'GET',
+          relative_url: item.object_id + '?fields=source',
+        };
+      }
     });
 
     // Build batch request data
@@ -62,19 +70,44 @@ leapAndTime.getStream = function getStream() {
         }
       });
 
-      // Add picture URL to the returned items
-      items.forEach(function (item, index, array) {
-        item.from.url = ids[item.from.id];
-        if (item.picture) {
-          $('#timeline').append(createItemElement(item.id, item.full_picture, item.from.url, item.message));
+      // Build batch request data
+      batch = [];
+      for (var prop in pics) {
+        if (pics.hasOwnProperty(prop)) {
+          batch.push(pics[prop]); 
         }
-      });
+      }
 
-      // Register click event for displaying object detail
-      $('.timeline-element').on('click', function (e) {
-        self.getObject($(this).attr('data-id'));
+      // Get larger photos
+      FB.api('/', 'post', { batch: batch }, function (res) {
+        pics = {};
+        res.forEach(function (item, index, array) {
+          var json;
+          if (item.code === 200) {
+            json = JSON.parse(item.body);
+            pics[json.id] = json.source;
+          } else {
+            // console.log(item);
+          }
+        });
+
+        // Add picture URL to the returned items
+        items.forEach(function (item, index, array) {
+          item.from.url = ids[item.from.id];
+          if (item.type === 'photo' && pics[item.object_id]) {
+            item.full_picture = pics[item.object_id];
+          }
+          if (item.picture) {
+            $('#timeline').append(createItemElement(item.id, item.full_picture, item.from.url, item.message));
+          }
+        });
+
+        // Register click event for displaying object detail
+        $('.timeline-element').on('click', function (e) {
+          self.getObject($(this).attr('data-id'));
+        });
+        self.items = items;
       });
-      self.items = items;
     });
   });
 };
