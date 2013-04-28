@@ -29,11 +29,45 @@ leapAndTime.logout = function logout() {
 // Get data from Facebook
 // ----------------------
 leapAndTime.getStream = function getStream() {
-  FB.api('/me/home', function (res) {
-    console.log(res.data);
+  var self = this;
 
-    // Get individual user profile picture
-    // /uid?fields=id,picture
+  FB.api('/me/home', function (res) {
+    var items = res.data
+      , ids   = {}
+      , batch = []
+      ;
+
+    // Get unique users
+    items.forEach(function (item, index, array) {
+      ids[item.from.id] = {
+        method: 'GET',
+        relative_url: item.from.id + '?fields=id,picture',
+      };
+    });
+
+    // Build batch request data
+    for (var prop in ids) {
+      if (ids.hasOwnProperty(prop)) {
+        batch.push(ids[prop]); 
+      }
+    }
+
+    // Get user profile picture
+    FB.api('/', 'post', { batch : batch }, function (res) {
+      res.forEach(function (item, index, array) {
+        var json;
+        if (item.code === 200) {
+          json = JSON.parse(item.body);
+          ids[json.id] = json.picture.data.url;
+        }
+      });
+
+      // Add picture URL to the returned items
+      items.forEach(function (item, index, array) {
+        item.from.url = ids[item.from.id];
+      });
+      self.items = items;
+    });
   });
 };
 
