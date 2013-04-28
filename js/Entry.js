@@ -70,20 +70,21 @@ Entry.prototype = {
             }
         }
 
-        if (!this._shared) {
-            var gestures = frame.gestures;
-            var displayGesture = '';
-            if (gestures.length > 0 ) {
-                for (var i = 0; i < gestures.length; i++) {
-                    //console.log(gestures[i].type);
-                    //console.log(gestures[i].type);
-                    var type = gestures[i].type;
+        var gestures = frame.gestures;
+        var displayGesture = '';
+        if (gestures.length > 0 ) {
+            for (var i = 0; i < gestures.length; i++) {
+                //console.log(gestures[i].type);
+                //console.log(gestures[i].type);
+                var type = gestures[i].type;
+                if (!this._shared) {
                     if (type === "circle" && gestures[i].radius > this._radiusShare) {
                         this.share(gestures[i].radius);
-                    } else if (type === "keyTap" || type === "screenTap") {
-                        this.goBack();
-                        return;
                     }
+                } 
+                if (type === "keyTap" || type === "screenTap") {
+                    this.goBack();
+                    return;
                 }
             }
         }
