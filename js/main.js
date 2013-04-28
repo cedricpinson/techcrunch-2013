@@ -46,6 +46,11 @@ var previousFrame = null;
 
 $(document).ready(function() {
 
+
+    var createItemElement = function(media, imageAvatar, description) {
+        return '<div class="timeline-element"><img src="' + media +'"><br>'+  '<div class="avatar"><img src="' + imageAvatar + '"></div> <div class="description">' + description + '</div></div>';
+    };
+
     var elementWidth = 800;
     // initalize timeline
     AppState.TimelineView = new Timeline();
@@ -57,7 +62,7 @@ $(document).ready(function() {
     for (var i = 0; i < nb; i++) {
         var number = Math.random();
         var color = "rgb(" + Math.floor(Math.random()*255) + "," + Math.floor(Math.random()*255) + ", "+ Math.floor(Math.random()*255) + ");";
-        $('#timeline').append('<div class="timeline-element"> </div>');
+        $('#timeline').append(createItemElement('data/11.jpg', 'data/pp.jpg', 'A beautiful picture about art and stuff very cool'));
     }
 
     AppState.TimelineView._width = width;

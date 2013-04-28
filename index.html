@@ -8,26 +8,65 @@
     <script src="js/facebook.js"></script>
     <script src="js/main.js"></script>
     <style>
-      #timeline {
-        //position: absolute;
-       background-image: url('data/background.png');
-       //background-size: 100%;
-      }
+	body{ 
+		font-family: Arial;
+		font-size: 13px;
+		font-family: 'Montserrat', sans-serif;
+		font-weight: 400;
+		margin: 0px;
+		padding: 0px;
+		background: #252525;
+		width: 4000px;
+	}
+  	#timeline {
+  		margin-top: 60px;
+  		margin-left: 60px;
+    }
 
-      #entry {
+    #entry {
         display: none;
-      }
+    }
 
-      .timeline-element {
-       background-image: url('data/background.png');
+    .timeline-element {
+    	margin: 20px 80px;
+        height: 700px;
         width: 800px;
-        height: 400px;
-      float: left;
-      }
-
-      .selected {
-       background-image: url(''); //rgba(255,0,255,0.7);
-      }
+      	float: left;
+      	position: relative;
+    }
+    .timeline-element img {
+    	height: 500px;
+    	border-radius: 3px;
+    	float: left;
+	  	box-shadow: 0px 0px 10px #000000;
+	}
+    .timeline-element .description {
+    	float: left;
+    	margin-top: 40px;
+		font-size: 12px;
+		color: #9baaa5;
+		line-height: 24px;
+		font-family: 'Montserrat', sans-serif;
+		font-weight: 400;
+		text-shadow: 1px 1px rgba(0,0,0,0.5);
+		color: #BDBDBD;		
+	}
+    .selected {
+    	background-image: url(''); //rgba(255,0,255,0.7);
+  	}
+  	.avatar {
+  		position:absolute;
+  		top: 440px;
+  		right: -30px;
+  	}
+  	.avatar img{
+  		height: 80px;
+  		width: 80px;
+  		border-radius: 88px;
+  		border: 3px solid #F2F2F2;
+  		float:left;
+  		box-shadow: 0px 0px 14px #000000;
+  	}
 
     </style>
   </head>
