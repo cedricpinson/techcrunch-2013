@@ -44,10 +44,12 @@ var AppState = {
 
 var previousFrame = null;
 
+var createItemElement;
+
 $(document).ready(function() {
 
 
-    var createItemElement = function(media, imageAvatar, description) {
+    createItemElement = function(media, imageAvatar, description) {
         return '<div class="timeline-element"><img src="' + media +'"><br>'+  '<div class="avatar"><img src="' + imageAvatar + '"></div> <div class="description">' + description + '</div></div>';
     };
 
@@ -62,7 +64,7 @@ $(document).ready(function() {
     for (var i = 0; i < nb; i++) {
         var number = Math.random();
         var color = "rgb(" + Math.floor(Math.random()*255) + "," + Math.floor(Math.random()*255) + ", "+ Math.floor(Math.random()*255) + ");";
-        $('#timeline').append(createItemElement('data/11.jpg', 'data/pp.jpg', 'A beautiful picture about art and stuff very cool'));
+        // $('#timeline').append(createItemElement('data/11.jpg', 'data/pp.jpg', 'A beautiful picture about art and stuff very cool'));
     }
 
     AppState.TimelineView._width = width;

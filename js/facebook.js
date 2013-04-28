@@ -29,11 +29,48 @@ leapAndTime.logout = function logout() {
 // Get data from Facebook
 // ----------------------
 leapAndTime.getStream = function getStream() {
-  FB.api('/me/home', function (res) {
-    console.log(res.data);
+  var self = this;
 
-    // Get individual user profile picture
-    // /uid?fields=id,picture
+  FB.api('/me/home?fields=full_picture,object_id,picture,from,message', function (res) {
+    var items = res.data
+      , ids   = {}
+      , batch = []
+      ;
+
+    // Get unique users
+    items.forEach(function (item, index, array) {
+      ids[item.from.id] = {
+        method: 'GET',
+        relative_url: item.from.id + '?fields=id,picture',
+      };
+    });
+
+    // Build batch request data
+    for (var prop in ids) {
+      if (ids.hasOwnProperty(prop)) {
+        batch.push(ids[prop]); 
+      }
+    }
+
+    // Get user profile picture
+    FB.api('/', 'post', { batch : batch }, function (res) {
+      res.forEach(function (item, index, array) {
+        var json;
+        if (item.code === 200) {
+          json = JSON.parse(item.body);
+          ids[json.id] = json.picture.data.url;
+        }
+      });
+
+      // Add picture URL to the returned items
+      items.forEach(function (item, index, array) {
+        item.from.url = ids[item.from.id];
+        if (item.picture) {
+          $('#timeline').append(createItemElement(item.full_picture, item.from.url, item.message));
+        }
+      });
+      self.items = items;
+    });
   });
 };
 
@@ -52,7 +89,7 @@ window.fbAsyncInit = function() {
   FB.getLoginStatus(function (res) {
     if (res.status === 'connected') {
       // connected
-      document.getElementById('fb-logout').style.display = 'block';
+      // document.getElementById('fb-logout').style.display = 'block';
       leapAndTime.getStream();
     } else if (res.status === 'not_authorized') {
       // not_authorized
@@ -60,7 +97,7 @@ window.fbAsyncInit = function() {
     } else {
       // not_logged_in
       leapAndTime.login();
-      document.getElementById('fb-logout').style.display = 'block';
+      // document.getElementById('fb-logout').style.display = 'block';
     }
   });
 };
