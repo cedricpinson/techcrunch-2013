@@ -7,6 +7,8 @@ var Entry = function() {
 
 Entry.prototype = {
     init: function(content) {
+        this._shared = false;
+        this._liked = false;
         this._id = content;
         $('#right-part').empty();
         var nbComments = 5;
