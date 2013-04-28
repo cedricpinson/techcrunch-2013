@@ -37,7 +37,7 @@ Entry.prototype = {
         $('.overlay').text('share');
         $('.overlay').show();
         $('.overlay').fadeOut(1000); //, 'easeInOutCubic');
-        //this._shared = true;
+        this._shared = true;
         console.log("share " + txt);
     },
 
