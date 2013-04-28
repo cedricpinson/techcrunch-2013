@@ -1,4 +1,4 @@
-;(function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0](function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
+;(function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
 /*	SWFObject v2.2 <http://code.google.com/p/swfobject/> 
 	is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 */
@@ -464,7 +464,7 @@ exports.Leap = {
 }
 
 })()
-},{"./controller":5,"./frame":6,"./circular_buffer":7,"./connection":8,"./ui":9}],7:[function(require,module,exports){
+},{"./controller":5,"./frame":6,"./connection":7,"./circular_buffer":8,"./ui":9}],8:[function(require,module,exports){
 var CircularBuffer = exports.CircularBuffer = function(size) {
   this.pos = 0;
   this._buf = [];
@@ -723,7 +723,7 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":10}],8:[function(require,module,exports){
+},{"__browserify_process":10}],7:[function(require,module,exports){
 var Connection = exports.Connection = require('./base_connection').Connection
 
 Connection.prototype.setupSocket = function() {
@@ -1163,128 +1163,7 @@ var Cursor = exports.Cursor = function() {
   }
 }
 
-},{}],5:[function(require,module,exports){
-var inNode = typeof(window) === 'undefined';
-
-var Frame = require('./frame').Frame
-  , CircularBuffer = require("./circular_buffer").CircularBuffer
-  , Pipeline = require("./pipeline").Pipeline
-  , EventEmitter = require('events').EventEmitter
-  , _ = require('underscore');
-
-var Controller = exports.Controller = function(opts) {
-  this.opts = _.defaults(opts || {}, {frameEventName: this.useAnimationLoop() ? 'animationFrame' : 'connectionFrame'});
-  this.history = new CircularBuffer(200);
-  var controller = this;
-  this.lastFrame = Frame.Invalid;
-  this.lastValidFrame = Frame.Invalid;
-  this.lastConnectionFrame = Frame.Invalid;
-  var connectionType = this.connectionType();
-  this.connection = new connectionType(this.opts);
-  this.accumulatedGestures = [];
-  this.connection.on('frame', function(frame) {
-    if (frame.gestures) {
-      controller.accumulatedGestures = controller.accumulatedGestures.concat(frame.gestures);
-    }
-    controller.processFrame(frame);
-  });
-  this.on(this.opts.frameEventName, function(frame) {
-    controller.processFinishedFrame(frame);
-  });
-
-  // Delegate connection events
-  this.connection.on('ready', function() { controller.emit('ready') });
-  this.connection.on('connect', function() { controller.emit('connect') });
-  this.connection.on('disconnect', function() { controller.emit('disconnect') });
-}
-
-Controller.prototype.inBrowser = function() {
-  return !inNode;
-}
-
-Controller.prototype.useAnimationLoop = function() {
-  return this.inBrowser() && typeof(chrome) === "undefined";
-}
-
-Controller.prototype.connectionType = function() {
-  return (this.inBrowser() ? require('./connection') : require('./node_connection')).Connection;
-}
-
-Controller.prototype.connect = function() {
-  var controller = this;
-  if (this.connection.connect() && this.inBrowser()) {
-    var callback = function() {
-      controller.emit('animationFrame', controller.lastConnectionFrame);
-      if (controller.opts.supressAnimationLoop !== true) window.requestAnimFrame(callback);
-    }
-    if (controller.opts.supressAnimationLoop !== true) {
-      window.requestAnimFrame(callback);
-    };
-  }
-}
-
-Controller.prototype.disconnect = function() {
-  this.connection.disconnect();
-}
-
-Controller.prototype.frame = function(num) {
-  return this.history.get(num) || Frame.Invalid;
-}
-
-Controller.prototype.loop = function(callback) {
-  switch (callback.length) {
-    case 1:
-      this.on(this.opts.frameEventName, callback);
-      break;
-    case 2:
-      var controller = this;
-      var scheduler = null;
-      var immediateRunnerCallback = function(frame) {
-        callback(frame, function() {
-          if (controller.lastFrame != frame) {
-            immediateRunnerCallback(controller.lastFrame);
-          } else {
-            controller.once(controller.opts.frameEventName, immediateRunnerCallback);
-          }
-        });
-      }
-      this.once(this.opts.frameEventName, immediateRunnerCallback);
-      break;
-  }
-  this.connect();
-}
-
-Controller.prototype.addStep = function(step) {
-  if (!this.pipeline) this.pipeline = new Pipeline(this);
-  this.pipeline.addStep(step);
-}
-
-Controller.prototype.processFrame = function(frame) {
-  if (this.pipeline) {
-    frame = this.pipeline.run(frame);
-    if (!frame) frame = Frame.Invalid;
-  }
-  this.lastConnectionFrame = frame;
-  this.emit('connectionFrame', frame);
-}
-
-Controller.prototype.processFinishedFrame = function(frame) {
-  this.lastFrame = frame;
-  if (frame.valid) {
-    this.lastValidFrame = frame;
-  }
-  if (frame.gestures) {
-    frame.gestures = this.accumulatedGestures;
-    this.accumulatedGestures = [];
-  }
-  frame.controller = this;
-  frame.historyIdx = this.history.push(frame);
-  this.emit('frame', frame);
-}
-
-_.extend(Controller.prototype, EventEmitter.prototype);
-
-},{"events":11,"./frame":6,"./circular_buffer":7,"./pipeline":15,"./connection":8,"./node_connection":17,"underscore":18}],19:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var Motion = require("./motion").Motion
 
 /**
@@ -1418,7 +1297,7 @@ Pointable.prototype.translation = Motion.translation;
  */
 Pointable.Invalid = { valid: false };
 
-},{"./motion":20}],20:[function(require,module,exports){
+},{"./motion":18}],18:[function(require,module,exports){
 //var $M = require("./sylvester").$M
 var transposeMultiply = require('./util').transposeMultiply
   , normalizeVector = require('./util').normalizeVector;
@@ -1550,7 +1429,128 @@ var Motion = exports.Motion = {
   }
 }
 
-},{"./util":21}],6:[function(require,module,exports){
+},{"./util":19}],5:[function(require,module,exports){
+var inNode = typeof(window) === 'undefined';
+
+var Frame = require('./frame').Frame
+  , CircularBuffer = require("./circular_buffer").CircularBuffer
+  , Pipeline = require("./pipeline").Pipeline
+  , EventEmitter = require('events').EventEmitter
+  , _ = require('underscore');
+
+var Controller = exports.Controller = function(opts) {
+  this.opts = _.defaults(opts || {}, {frameEventName: this.useAnimationLoop() ? 'animationFrame' : 'connectionFrame'});
+  this.history = new CircularBuffer(200);
+  var controller = this;
+  this.lastFrame = Frame.Invalid;
+  this.lastValidFrame = Frame.Invalid;
+  this.lastConnectionFrame = Frame.Invalid;
+  var connectionType = this.connectionType();
+  this.connection = new connectionType(this.opts);
+  this.accumulatedGestures = [];
+  this.connection.on('frame', function(frame) {
+    if (frame.gestures) {
+      controller.accumulatedGestures = controller.accumulatedGestures.concat(frame.gestures);
+    }
+    controller.processFrame(frame);
+  });
+  this.on(this.opts.frameEventName, function(frame) {
+    controller.processFinishedFrame(frame);
+  });
+
+  // Delegate connection events
+  this.connection.on('ready', function() { controller.emit('ready') });
+  this.connection.on('connect', function() { controller.emit('connect') });
+  this.connection.on('disconnect', function() { controller.emit('disconnect') });
+}
+
+Controller.prototype.inBrowser = function() {
+  return !inNode;
+}
+
+Controller.prototype.useAnimationLoop = function() {
+  return this.inBrowser() && typeof(chrome) === "undefined";
+}
+
+Controller.prototype.connectionType = function() {
+  return (this.inBrowser() ? require('./connection') : require('./node_connection')).Connection;
+}
+
+Controller.prototype.connect = function() {
+  var controller = this;
+  if (this.connection.connect() && this.inBrowser()) {
+    var callback = function() {
+      controller.emit('animationFrame', controller.lastConnectionFrame);
+      if (controller.opts.supressAnimationLoop !== true) window.requestAnimFrame(callback);
+    }
+    if (controller.opts.supressAnimationLoop !== true) {
+      window.requestAnimFrame(callback);
+    };
+  }
+}
+
+Controller.prototype.disconnect = function() {
+  this.connection.disconnect();
+}
+
+Controller.prototype.frame = function(num) {
+  return this.history.get(num) || Frame.Invalid;
+}
+
+Controller.prototype.loop = function(callback) {
+  switch (callback.length) {
+    case 1:
+      this.on(this.opts.frameEventName, callback);
+      break;
+    case 2:
+      var controller = this;
+      var scheduler = null;
+      var immediateRunnerCallback = function(frame) {
+        callback(frame, function() {
+          if (controller.lastFrame != frame) {
+            immediateRunnerCallback(controller.lastFrame);
+          } else {
+            controller.once(controller.opts.frameEventName, immediateRunnerCallback);
+          }
+        });
+      }
+      this.once(this.opts.frameEventName, immediateRunnerCallback);
+      break;
+  }
+  this.connect();
+}
+
+Controller.prototype.addStep = function(step) {
+  if (!this.pipeline) this.pipeline = new Pipeline(this);
+  this.pipeline.addStep(step);
+}
+
+Controller.prototype.processFrame = function(frame) {
+  if (this.pipeline) {
+    frame = this.pipeline.run(frame);
+    if (!frame) frame = Frame.Invalid;
+  }
+  this.lastConnectionFrame = frame;
+  this.emit('connectionFrame', frame);
+}
+
+Controller.prototype.processFinishedFrame = function(frame) {
+  this.lastFrame = frame;
+  if (frame.valid) {
+    this.lastValidFrame = frame;
+  }
+  if (frame.gestures) {
+    frame.gestures = this.accumulatedGestures;
+    this.accumulatedGestures = [];
+  }
+  frame.controller = this;
+  frame.historyIdx = this.history.push(frame);
+  this.emit('frame', frame);
+}
+
+_.extend(Controller.prototype, EventEmitter.prototype);
+
+},{"events":11,"./frame":6,"./circular_buffer":8,"./pipeline":15,"./connection":7,"./node_connection":20,"underscore":21}],6:[function(require,module,exports){
 var Hand = require("./hand").Hand
   , Pointable = require("./pointable").Pointable
   , Motion = require("./motion").Motion
@@ -1858,7 +1858,66 @@ Frame.Invalid = {
 _.extend(Frame.prototype, Motion);
 _.extend(Frame.Invalid, Motion);
 
-},{"./hand":22,"./pointable":19,"./motion":20,"./gesture":16,"underscore":18}],18:[function(require,module,exports){
+},{"./hand":22,"./pointable":17,"./motion":18,"./gesture":16,"underscore":21}],19:[function(require,module,exports){
+var transposeMultiply = exports.transposeMultiply = function(m1, m2) {
+  return multiply(transpose(m1), m2);
+}
+
+var transpose = exports.transposeMultiply = function(m) {
+  return [[m[0][0], m[1][0], m[2][0]], [m[0][1], m[1][1], m[2][1]], [m[0][2], m[1][2], m[2][2]]];
+}
+
+var multiply = exports.multiply = function(m1, m2) {
+  return [
+    [
+      m1[0][0] * m2[0][0] + m1[0][1] * m2[1][0] + m1[0][2] * m2[2][0],
+      m1[0][0] * m2[0][1] + m1[0][1] * m2[1][1] + m1[0][2] * m2[2][1],
+      m1[0][0] * m2[0][2] + m1[0][1] * m2[1][2] + m1[0][2] * m2[2][2]
+    ], [
+      m1[1][0] * m2[0][0] + m1[1][1] * m2[1][0] + m1[1][2] * m2[2][0],
+      m1[1][0] * m2[0][1] + m1[1][1] * m2[1][1] + m1[1][2] * m2[2][1],
+      m1[1][0] * m2[0][2] + m1[1][1] * m2[1][2] + m1[1][2] * m2[2][2]
+    ], [
+      m1[2][0] * m2[0][0] + m1[2][1] * m2[1][0] + m1[2][2] * m2[2][0],
+      m1[2][0] * m2[0][1] + m1[2][1] * m2[1][1] + m1[2][2] * m2[2][1],
+      m1[2][0] * m2[0][2] + m1[2][1] * m2[1][2] + m1[2][2] * m2[2][2]
+    ]
+  ];
+}
+
+/**
+ * A utility function to multiply a vector represented by a 3-element array
+ * by a scalar.
+ *
+ * @method Leap.multiply
+ * @param {Array: [x,y,z]} vec An array containing three elements representing
+ * coordinates in 3-dimensional space.
+ * @param {Number} c A scalar value.
+ * @returns {Array: [c*x, c*y, c*z]} The product of a 3-d vector and a scalar.
+ */
+var multiplyVector = exports.multiplyVector = function(vec, c) {
+  return [vec[0] * c, vec[1] * c, vec[2] * c];
+};
+
+/**
+ * A utility function to normalize a vector represented by a 3-element array.
+ *
+ * A normalized vector has the same direction as the original, but a length
+ * of 1.0.
+ *
+ * @method Leap.normalize
+ * @param {Array: [x,y,z]} vec An array containing three elements representing
+ * coordinates in 3-dimensional space.
+ * @returns {Array: [x,y,z]} The normalized vector.
+ */
+var normalizeVector = exports.normalizeVector = function(vec) {
+  var denom = vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2];
+  if (denom <= 0) return [0,0,0];
+  var c = 1.0 / Math.sqrt(denom);
+  return multiplyVector(vec, c);
+}
+
+},{}],21:[function(require,module,exports){
 (function(){//     Underscore.js 1.4.4
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud Inc.
@@ -3087,66 +3146,204 @@ _.extend(Frame.Invalid, Motion);
 }).call(this);
 
 })()
-},{}],21:[function(require,module,exports){
-var transposeMultiply = exports.transposeMultiply = function(m1, m2) {
-  return multiply(transpose(m1), m2);
-}
+},{}],22:[function(require,module,exports){
+var Motion = require("./motion").Motion
+  , Pointable = require("./pointable").Pointable
+  , _ = require("underscore");
 
-var transpose = exports.transposeMultiply = function(m) {
-  return [[m[0][0], m[1][0], m[2][0]], [m[0][1], m[1][1], m[2][1]], [m[0][2], m[1][2], m[2][2]]];
-}
-
-var multiply = exports.multiply = function(m1, m2) {
-  return [
-    [
-      m1[0][0] * m2[0][0] + m1[0][1] * m2[1][0] + m1[0][2] * m2[2][0],
-      m1[0][0] * m2[0][1] + m1[0][1] * m2[1][1] + m1[0][2] * m2[2][1],
-      m1[0][0] * m2[0][2] + m1[0][1] * m2[1][2] + m1[0][2] * m2[2][2]
-    ], [
-      m1[1][0] * m2[0][0] + m1[1][1] * m2[1][0] + m1[1][2] * m2[2][0],
-      m1[1][0] * m2[0][1] + m1[1][1] * m2[1][1] + m1[1][2] * m2[2][1],
-      m1[1][0] * m2[0][2] + m1[1][1] * m2[1][2] + m1[1][2] * m2[2][2]
-    ], [
-      m1[2][0] * m2[0][0] + m1[2][1] * m2[1][0] + m1[2][2] * m2[2][0],
-      m1[2][0] * m2[0][1] + m1[2][1] * m2[1][1] + m1[2][2] * m2[2][1],
-      m1[2][0] * m2[0][2] + m1[2][1] * m2[1][2] + m1[2][2] * m2[2][2]
-    ]
-  ];
+/**
+ * Constructs a Hand object.
+ *
+ * An uninitialized hand is considered invalid.
+ * Get valid Hand objects from a Frame object.
+ * @class Hand
+ *
+ * @classdesc
+ * The Hand class reports the physical characteristics of a detected hand.
+ *
+ * Hand tracking data includes a palm position and velocity; vectors for
+ * the palm normal and direction to the fingers; properties of a sphere fit
+ * to the hand; and lists of the attached fingers and tools.
+ *
+ * Note that Hand objects can be invalid, which means that they do not contain
+ * valid tracking data and do not correspond to a physical entity. Invalid Hand
+ * objects can be the result of asking for a Hand object using an ID from an
+ * earlier frame when no Hand objects with that ID exist in the current frame.
+ * A Hand object created from the Hand constructor is also invalid.
+ * Test for validity with the {@link Hand#valid} property.
+ *
+ * @borrows Motion#translation as #translation
+ * @borrows Motion#rotationAxis as #rotationAxis
+ * @borrows Motion#rotationAngle as #rotationAngle
+ * @borrows Motion#rotationMatrix as #rotationMatrix
+ * @borrows Motion#scaleFactor as #scaleFactor
+ */
+var Hand = exports.Hand = function(data) {
+  /**
+   * A unique ID assigned to this Hand object, whose value remains the same
+   * across consecutive frames while the tracked hand remains visible. If
+   * tracking is lost (for example, when a hand is occluded by another hand
+   * or when it is withdrawn from or reaches the edge of the Leap field of view),
+   * the Leap may assign a new ID when it detects the hand in a future frame.
+   *
+   * Use the ID value with the {@link Frame.hand}() function to find this
+   * Hand object in future frames.
+   *
+   * @member Hand.prototype.id
+   * @type {String}
+   */
+  this.id = data.id;
+  /**
+   * The center position of the palm in millimeters from the Leap origin.
+   * @member Hand.prototype.palmPosition
+   * @type {Array: [x,y,z]}
+   */
+  this.palmPosition = data.palmPosition;
+  /**
+   * The direction from the palm position toward the fingers.
+   *
+   * The direction is expressed as a unit vector pointing in the same
+   * direction as the directed line from the palm position to the fingers.
+   *
+   * @member Hand.prototype.direction
+   * @type {Array: [x,y,z]}
+   */
+  this.direction = data.direction;
+  /**
+   * The rate of change of the palm position in millimeters/second.
+   *
+   * @member Hand.prototype.palmVeclocity
+   * @type {Array: [Vx,Vy,Vz]}
+   */
+  this.palmVelocity = data.palmVelocity;
+  /**
+   * The normal vector to the palm. If your hand is flat, this vector will
+   * point downward, or "out" of the front surface of your palm.
+   *
+   * <img src="images/Leap_Palm_Vectors.png"/>
+   *
+   * The direction is expressed as a unit vector pointing in the same
+   * direction as the palm normal (that is, a vector orthogonal to the palm).
+   * @member Hand.prototype.palmNormal
+   * @type {Array: [x,y,z]}
+   */
+  this.palmNormal = data.palmNormal;
+  /**
+   * The center of a sphere fit to the curvature of this hand.
+   *
+   * This sphere is placed roughly as if the hand were holding a ball.
+   *
+   * <img src="images/Leap_Hand_Ball.png"/>
+   * @member Hand.prototype.sphereCenter
+   * @type {Array: [x,y,z]}
+   */
+  this.sphereCenter = data.sphereCenter
+  /**
+   * The radius of a sphere fit to the curvature of this hand, in millimeters.
+   *
+   * This sphere is placed roughly as if the hand were holding a ball. Thus the
+   * size of the sphere decreases as the fingers are curled into a fist.
+   *
+   * @member Hand.prototype.sphereRadius
+   * @type {Number}
+   */
+  this.sphereRadius = data.sphereRadius;
+  /**
+   * Reports whether this is a valid Hand object.
+   *
+   * @member Hand.prototype.valid
+   * @type {Boolean}
+   */
+  this.valid = true;
+  /**
+   * The list of Pointable objects (fingers and tools) detected in this frame
+   * that are associated with this hand, given in arbitrary order. The list
+   * can be empty if no fingers or tools associated with this hand are detected.
+   *
+   * Use the {@link Pointable} tool property to determine
+   * whether or not an item in the list represents a tool or finger.
+   * You can also get only the tools using the Hand.tools[] list or
+   * only the fingers using the Hand.fingers[] list.
+   *
+   * @member Hand.prototype.pointables[]
+   * @type {Pointable}
+   */
+  this.pointables = [];
+  /**
+   * The list of fingers detected in this frame that are attached to
+   * this hand, given in arbitrary order.
+   *
+   * The list can be empty if no fingers attached to this hand are detected.
+   *
+   * @member Frame.prototype.fingers[]
+   * @type {Pointable}
+   */
+  this.fingers = [];
+  /**
+   * The list of tools detected in this frame that are held by this
+   * hand, given in arbitrary order.
+   *
+   * The list can be empty if no tools held by this hand are detected.
+   *
+   * @member Hand.prototype.tools[]
+   * @type {Pointable}
+   */
+  this.tools = [];
+  this._translation = data.t;
+  this.rotation = data.r;
+  this._scaleFactor = data.s;
 }
 
 /**
- * A utility function to multiply a vector represented by a 3-element array
- * by a scalar.
+ * The finger with the specified ID attached to this hand.
  *
- * @method Leap.multiply
- * @param {Array: [x,y,z]} vec An array containing three elements representing
- * coordinates in 3-dimensional space.
- * @param {Number} c A scalar value.
- * @returns {Array: [c*x, c*y, c*z]} The product of a 3-d vector and a scalar.
+ * Use this function to retrieve a Pointable object representing a finger
+ * attached to this hand using an ID value obtained from a previous frame.
+ * This function always returns a Pointable object, but if no finger
+ * with the specified ID is present, an invalid Pointable object is returned.
+ *
+ * Note that the ID values assigned to fingers persist across frames, but only
+ * until tracking of a particular finger is lost. If tracking of a finger is
+ * lost and subsequently regained, the new Finger object representing that
+ * finger may have a different ID than that representing the finger in an
+ * earlier frame.
+ *
+ * @method Hand.prototype.finger
+ * @param {String} id The ID value of a finger from a previous frame.
+ * @returns {Pointable | Pointable.Invalid} The Finger object with
+ * the matching ID if one exists for this hand in this frame; otherwise, an
+ * invalid Finger object is returned.
  */
-var multiplyVector = exports.multiplyVector = function(vec, c) {
-  return [vec[0] * c, vec[1] * c, vec[2] * c];
-};
-
-/**
- * A utility function to normalize a vector represented by a 3-element array.
- *
- * A normalized vector has the same direction as the original, but a length
- * of 1.0.
- *
- * @method Leap.normalize
- * @param {Array: [x,y,z]} vec An array containing three elements representing
- * coordinates in 3-dimensional space.
- * @returns {Array: [x,y,z]} The normalized vector.
- */
-var normalizeVector = exports.normalizeVector = function(vec) {
-  var denom = vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2];
-  if (denom <= 0) return [0,0,0];
-  var c = 1.0 / Math.sqrt(denom);
-  return multiplyVector(vec, c);
+Hand.prototype.finger = function(id) {
+  var finger = this.frame.finger(id);
+  return (finger && finger.handId == this.id) ? finger : Pointable.Invalid;
 }
 
-},{}],23:[function(require,module,exports){
+/**
+ * A string containing a brief, human readable description of the Hand object.
+ * @method Hand.prototype.toString
+ * @returns {String} A description of the Hand as a string.
+ */
+Hand.prototype.toString = function() {
+  return "Hand [ id: "+ this.id + " | palm velocity:"+this.palmVelocity+" | sphere center:"+this.sphereCenter+" ] ";
+}
+
+/**
+ * An invalid Hand object.
+ *
+ * You can use an invalid Hand object in comparisons testing
+ * whether a given Hand instance is valid or invalid. (You can also use the
+ * Hand valid property.)
+ *
+ * @constant
+ * @type {Hand}
+ * @name Hand.Invalid
+ */
+Hand.Invalid = { valid: false };
+_.extend(Hand.Invalid, Motion);
+_.extend(Hand.prototype, Motion);
+
+},{"./motion":18,"./pointable":17,"underscore":21}],23:[function(require,module,exports){
 var events = require('events');
 
 exports.isArray = isArray;
@@ -3499,225 +3696,7 @@ exports.format = function(f) {
   return str;
 };
 
-},{"events":11}],22:[function(require,module,exports){
-var Motion = require("./motion").Motion
-  , Pointable = require("./pointable").Pointable
-  , _ = require("underscore");
-
-/**
- * Constructs a Hand object.
- *
- * An uninitialized hand is considered invalid.
- * Get valid Hand objects from a Frame object.
- * @class Hand
- *
- * @classdesc
- * The Hand class reports the physical characteristics of a detected hand.
- *
- * Hand tracking data includes a palm position and velocity; vectors for
- * the palm normal and direction to the fingers; properties of a sphere fit
- * to the hand; and lists of the attached fingers and tools.
- *
- * Note that Hand objects can be invalid, which means that they do not contain
- * valid tracking data and do not correspond to a physical entity. Invalid Hand
- * objects can be the result of asking for a Hand object using an ID from an
- * earlier frame when no Hand objects with that ID exist in the current frame.
- * A Hand object created from the Hand constructor is also invalid.
- * Test for validity with the {@link Hand#valid} property.
- *
- * @borrows Motion#translation as #translation
- * @borrows Motion#rotationAxis as #rotationAxis
- * @borrows Motion#rotationAngle as #rotationAngle
- * @borrows Motion#rotationMatrix as #rotationMatrix
- * @borrows Motion#scaleFactor as #scaleFactor
- */
-var Hand = exports.Hand = function(data) {
-  /**
-   * A unique ID assigned to this Hand object, whose value remains the same
-   * across consecutive frames while the tracked hand remains visible. If
-   * tracking is lost (for example, when a hand is occluded by another hand
-   * or when it is withdrawn from or reaches the edge of the Leap field of view),
-   * the Leap may assign a new ID when it detects the hand in a future frame.
-   *
-   * Use the ID value with the {@link Frame.hand}() function to find this
-   * Hand object in future frames.
-   *
-   * @member Hand.prototype.id
-   * @type {String}
-   */
-  this.id = data.id;
-  /**
-   * The center position of the palm in millimeters from the Leap origin.
-   * @member Hand.prototype.palmPosition
-   * @type {Array: [x,y,z]}
-   */
-  this.palmPosition = data.palmPosition;
-  /**
-   * The direction from the palm position toward the fingers.
-   *
-   * The direction is expressed as a unit vector pointing in the same
-   * direction as the directed line from the palm position to the fingers.
-   *
-   * @member Hand.prototype.direction
-   * @type {Array: [x,y,z]}
-   */
-  this.direction = data.direction;
-  /**
-   * The rate of change of the palm position in millimeters/second.
-   *
-   * @member Hand.prototype.palmVeclocity
-   * @type {Array: [Vx,Vy,Vz]}
-   */
-  this.palmVelocity = data.palmVelocity;
-  /**
-   * The normal vector to the palm. If your hand is flat, this vector will
-   * point downward, or "out" of the front surface of your palm.
-   *
-   * <img src="images/Leap_Palm_Vectors.png"/>
-   *
-   * The direction is expressed as a unit vector pointing in the same
-   * direction as the palm normal (that is, a vector orthogonal to the palm).
-   * @member Hand.prototype.palmNormal
-   * @type {Array: [x,y,z]}
-   */
-  this.palmNormal = data.palmNormal;
-  /**
-   * The center of a sphere fit to the curvature of this hand.
-   *
-   * This sphere is placed roughly as if the hand were holding a ball.
-   *
-   * <img src="images/Leap_Hand_Ball.png"/>
-   * @member Hand.prototype.sphereCenter
-   * @type {Array: [x,y,z]}
-   */
-  this.sphereCenter = data.sphereCenter
-  /**
-   * The radius of a sphere fit to the curvature of this hand, in millimeters.
-   *
-   * This sphere is placed roughly as if the hand were holding a ball. Thus the
-   * size of the sphere decreases as the fingers are curled into a fist.
-   *
-   * @member Hand.prototype.sphereRadius
-   * @type {Number}
-   */
-  this.sphereRadius = data.sphereRadius;
-  /**
-   * Reports whether this is a valid Hand object.
-   *
-   * @member Hand.prototype.valid
-   * @type {Boolean}
-   */
-  this.valid = true;
-  /**
-   * The list of Pointable objects (fingers and tools) detected in this frame
-   * that are associated with this hand, given in arbitrary order. The list
-   * can be empty if no fingers or tools associated with this hand are detected.
-   *
-   * Use the {@link Pointable} tool property to determine
-   * whether or not an item in the list represents a tool or finger.
-   * You can also get only the tools using the Hand.tools[] list or
-   * only the fingers using the Hand.fingers[] list.
-   *
-   * @member Hand.prototype.pointables[]
-   * @type {Pointable}
-   */
-  this.pointables = [];
-  /**
-   * The list of fingers detected in this frame that are attached to
-   * this hand, given in arbitrary order.
-   *
-   * The list can be empty if no fingers attached to this hand are detected.
-   *
-   * @member Frame.prototype.fingers[]
-   * @type {Pointable}
-   */
-  this.fingers = [];
-  /**
-   * The list of tools detected in this frame that are held by this
-   * hand, given in arbitrary order.
-   *
-   * The list can be empty if no tools held by this hand are detected.
-   *
-   * @member Hand.prototype.tools[]
-   * @type {Pointable}
-   */
-  this.tools = [];
-  this._translation = data.t;
-  this.rotation = data.r;
-  this._scaleFactor = data.s;
-}
-
-/**
- * The finger with the specified ID attached to this hand.
- *
- * Use this function to retrieve a Pointable object representing a finger
- * attached to this hand using an ID value obtained from a previous frame.
- * This function always returns a Pointable object, but if no finger
- * with the specified ID is present, an invalid Pointable object is returned.
- *
- * Note that the ID values assigned to fingers persist across frames, but only
- * until tracking of a particular finger is lost. If tracking of a finger is
- * lost and subsequently regained, the new Finger object representing that
- * finger may have a different ID than that representing the finger in an
- * earlier frame.
- *
- * @method Hand.prototype.finger
- * @param {String} id The ID value of a finger from a previous frame.
- * @returns {Pointable | Pointable.Invalid} The Finger object with
- * the matching ID if one exists for this hand in this frame; otherwise, an
- * invalid Finger object is returned.
- */
-Hand.prototype.finger = function(id) {
-  var finger = this.frame.finger(id);
-  return (finger && finger.handId == this.id) ? finger : Pointable.Invalid;
-}
-
-/**
- * A string containing a brief, human readable description of the Hand object.
- * @method Hand.prototype.toString
- * @returns {String} A description of the Hand as a string.
- */
-Hand.prototype.toString = function() {
-  return "Hand [ id: "+ this.id + " | palm velocity:"+this.palmVelocity+" | sphere center:"+this.sphereCenter+" ] ";
-}
-
-/**
- * An invalid Hand object.
- *
- * You can use an invalid Hand object in comparisons testing
- * whether a given Hand instance is valid or invalid. (You can also use the
- * Hand valid property.)
- *
- * @constant
- * @type {Hand}
- * @name Hand.Invalid
- */
-Hand.Invalid = { valid: false };
-_.extend(Hand.Invalid, Motion);
-_.extend(Hand.prototype, Motion);
-
-},{"./motion":20,"./pointable":19,"underscore":18}],17:[function(require,module,exports){
-var Frame = require('./frame').Frame
-  , WebSocket = require('ws')
-
-var Connection = exports.Connection = require('./base_connection').Connection
-
-Connection.prototype.setupSocket = function() {
-  var connection = this;
-  var socket = new WebSocket("ws://" + this.host + ":" + this.port);
-  socket.on('open', function() { connection.handleOpen() });
-  socket.on('message', function(m) { connection.handleData(m) });
-  socket.on('close', function() { connection.handleClose() });
-  socket.on('error', function() { connection.startReconnection() });
-  return socket;
-}
-
-Connection.prototype.teardownSocket = function() {
-  this.socket.close();
-  delete this.socket;
-  delete this.protocol;
-}
-},{"./frame":6,"./base_connection":12,"ws":24}],25:[function(require,module,exports){
+},{"events":11}],24:[function(require,module,exports){
 var Frame = require('./frame').Frame
   , util = require('util');
 
@@ -3814,15 +3793,28 @@ Connection.prototype.send = function(data) {
 
 _.extend(Connection.prototype, EventEmitter.prototype);
 
-},{"events":11,"./protocol":25,"underscore":18}],24:[function(require,module,exports){
-(function(global){/// shim for browser packaging
+},{"events":11,"./protocol":24,"underscore":21}],20:[function(require,module,exports){
+var Frame = require('./frame').Frame
+  , WebSocket = require('ws')
 
-module.exports = function() {
-  return global.WebSocket || global.MozWebSocket;
+var Connection = exports.Connection = require('./base_connection').Connection
+
+Connection.prototype.setupSocket = function() {
+  var connection = this;
+  var socket = new WebSocket("ws://" + this.host + ":" + this.port);
+  socket.on('open', function() { connection.handleOpen() });
+  socket.on('message', function(m) { connection.handleData(m) });
+  socket.on('close', function() { connection.handleClose() });
+  socket.on('error', function() { connection.startReconnection() });
+  return socket;
 }
 
-})(window)
-},{}],13:[function(require,module,exports){
+Connection.prototype.teardownSocket = function() {
+  this.socket.close();
+  delete this.socket;
+  delete this.protocol;
+}
+},{"./frame":6,"./base_connection":12,"ws":25}],13:[function(require,module,exports){
 var EventEmitter = require('events').EventEmitter
   , _ = require('underscore')
 
@@ -3910,5 +3902,13 @@ Region.prototype.mapToXY = function(position, width, height) {
 }
 
 _.extend(Region.prototype, EventEmitter.prototype)
-},{"events":11,"underscore":18}]},{},[1,2,3])
+},{"events":11,"underscore":21}],25:[function(require,module,exports){
+(function(global){/// shim for browser packaging
+
+module.exports = function() {
+  return global.WebSocket || global.MozWebSocket;
+}
+
+})(window)
+},{}]},{},[1,2,3])
 ;

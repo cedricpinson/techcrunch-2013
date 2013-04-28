@@ -3,12 +3,18 @@
     <title>Dumper - Leap</title>
     <script src="js/jquery.js"></script>
     <script src="js/leap.js"></script>
+    <script src="js/Timeline.js"></script>
+    <script src="js/Entry.js"></script>
     <script src="js/main.js"></script>
     <style>
       #timeline {
         //position: absolute;
        background-image: url('data/background.png');
        //background-size: 100%;
+      }
+
+      #entry {
+        display: none;
       }
 
       .timeline-element {
@@ -27,7 +33,10 @@
   <body>
     <div id="timeline">
     </div>
-    <div id="out"></div>
-    <div id="log"></div>
+    <div id="entry">
+      <p>
+        blha blha
+      </p>
+    </div>
   </body>
 </html>
