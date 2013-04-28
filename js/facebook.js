@@ -98,7 +98,7 @@ leapAndTime.getStream = function getStream() {
             item.full_picture = pics[item.object_id];
           }
           if (item.picture) {
-            $('#timeline').append(createItemElement(item.id, item.full_picture, item.from.url, item.message));
+            $('#timeline').append(createItemElement(item.type === 'photo' ? item.object_id : item.id, item.type, item.full_picture, item.from.url, item.message));
           }
         });
 
@@ -114,7 +114,7 @@ leapAndTime.getStream = function getStream() {
 
         // Register click event for displaying object detail
         $('.timeline-element').on('click', function (e) {
-          self.getObject($(this).attr('data-id'));
+          self.getObject($(this).attr('data-id'), $(this).attr('data-type'));
         });
         self.items = items;
       });
@@ -124,17 +124,18 @@ leapAndTime.getStream = function getStream() {
 
 // Get individual object
 // ---------------------
-leapAndTime.getObject = function getObject(id) {
+leapAndTime.getObject = function getObject(id, type) {
   var self = this;
+  var fields = (type === 'photo' ? 'images,source,likes,name' : 'full_picture,message,likes,actions');
 
-  FB.api('/' + id + '?fields=full_picture,message,likes,actions', function (res) {
+  FB.api('/' + id + '?fields=' + fields, function (res) {
     // console.log(res);
     var html = '' +
       '<div class="entry-detail" data-id="' + res.id + '">' +
-        '<img src="' + res.full_picture + '">' +
-        '<div class="description">' + res.message + '</div>' +
+        '<img src="' + (res.images && res.images[0].source || res.source || res.full_picture) + '">' +
+        '<div class="description">' + (res.message || res.name) + '</div>' +
         '<div class="actions">' +
-          '<div class="likes">' + (res.likes ? res.likes.count : 0) +'</div>' +
+          '<div class="likes">' + (res.likes ? res.likes.data.length : 0) +'</div>' +
         '</div>' +
       '<div>';
     $('#entry').append(html);
