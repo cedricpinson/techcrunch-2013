@@ -31,7 +31,7 @@ leapAndTime.logout = function logout() {
 leapAndTime.getStream = function getStream() {
   var self = this;
 
-  FB.api('/me/home', function (res) {
+  FB.api('/me/home?fields=full_picture,object_id,picture,from,message', function (res) {
     var items = res.data
       , ids   = {}
       , batch = []
@@ -65,6 +65,9 @@ leapAndTime.getStream = function getStream() {
       // Add picture URL to the returned items
       items.forEach(function (item, index, array) {
         item.from.url = ids[item.from.id];
+        if (item.picture) {
+          $('#timeline').append(createItemElement(item.full_picture, item.from.url, item.message));
+        }
       });
       self.items = items;
     });
@@ -86,7 +89,7 @@ window.fbAsyncInit = function() {
   FB.getLoginStatus(function (res) {
     if (res.status === 'connected') {
       // connected
-      document.getElementById('fb-logout').style.display = 'block';
+      // document.getElementById('fb-logout').style.display = 'block';
       leapAndTime.getStream();
     } else if (res.status === 'not_authorized') {
       // not_authorized
@@ -94,7 +97,7 @@ window.fbAsyncInit = function() {
     } else {
       // not_logged_in
       leapAndTime.login();
-      document.getElementById('fb-logout').style.display = 'block';
+      // document.getElementById('fb-logout').style.display = 'block';
     }
   });
 };
