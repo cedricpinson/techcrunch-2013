@@ -49,8 +49,8 @@ var createItemElement;
 $(document).ready(function() {
 
 
-    createItemElement = function(id, media, imageAvatar, description) {
-        return '<div class="timeline-element" data-id="' + id + '"><img src="' + media +'"><br>'+  '<div class="avatar"><img src="' + imageAvatar + '"></div> <div class="description">' + description + '</div></div>';
+    createItemElement = function(id, type, media, imageAvatar, description) {
+        return '<div class="timeline-element" data-id="' + id + '" data-type="' + type + '"><img src="' + media +'"><br>'+  '<div class="avatar"><img src="' + imageAvatar + '"></div> <div class="description">' + description + '</div></div>';
     };
 
     var elementWidth = 840;
