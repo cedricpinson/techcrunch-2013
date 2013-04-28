@@ -135,7 +135,7 @@ leapAndTime.getObject = function getObject(id, type) {
           '<div class="likes">' + (res.likes ? res.likes.data.length : 0) +'</div>' +
         '</div>' +
       '<div>';
-    $('#entry #media').append(html);
+    $('#left-part').append(html);
     AppState.switchMode('EntryView');
 
     $('#entry .entry-detail').on('click', function (e) {

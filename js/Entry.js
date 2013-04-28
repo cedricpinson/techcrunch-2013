@@ -15,11 +15,12 @@ Entry.prototype = {
             $("#right-part").append(this.createElement(url, com));
         }
 
+        return;
         var mediaURL = 'data/11.jpg';
         var post = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere massa in quam fermentum volutpat";
         $('#media').empty();
         //$('#media').append('<div style="background-image: url('+ mediaURL + ')"></div>');
-        $('#media').append('<img src="'+ mediaURL + '">');
+//        $('#media').append('<img src="'+ mediaURL + '">');
         $('#post').empty();
         $('#post').append("<p>"+post+"</p>");
     },
