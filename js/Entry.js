@@ -7,11 +7,30 @@ var Entry = function() {
 
 Entry.prototype = {
     init: function(content) {
-        
+        $('#right-part').empty();
+        var nbComments = 5;
+        for (var i = 0; i < nbComments; i++) {
+            var url = 'data/pp.jpg';
+            var com = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere massa in quam fermentum volutpat";
+            $("#entry").append(this.createElement(url, com));
+        }
+
+        var mediaURL = 'data/11.jpg';
+        var post = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere massa in quam fermentum volutpat";
+        $('#media').empty();
+        //$('#media').append('<div style="background-image: url('+ mediaURL + ')"></div>');
+        $('#media').append('<img src="'+ mediaURL + '">');
+        $('#post').empty();
+        $('#post').append("<p>"+post+"</p>");
     },
 
     render: function() {
 
+    },
+
+    createElement: function(avatar, comment) {
+        var entry = "<div class='comment-entry'><div class='comment-avatar'> <img src='"+ avatar + "'></div><div class='comment'>"+ comment + "</div></div>";
+        return entry;
     },
 
     share: function(txt) {

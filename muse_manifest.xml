@@ -1,0 +1,42 @@
+<manifest alg="2" build="8" opt="false">
+  <folder name="css">
+    <file name="site_global.css" crc="52916846"/>
+    <file name="index.css" crc="4144986067" ref="index"/>
+    <file name="iefonts_index.css" crc="173401047" ref="index"/>
+  </folder>
+  <folder name="scripts">
+    <file name="jquery-1.8.3.min.js" crc="3828297711" ref="index"/>
+    <file name="museutils.js" crc="4215913851" ref="index"/>
+    <file name="pie.js" crc="3786417276" ref="index"/>
+    <file name="jquery.tobrowserwidth.js" crc="4052033419" ref="index"/>
+    <file name="jquery.watch.js" crc="4199601726" ref="index"/>
+  </folder>
+  <folder name="images">
+    <file name="shadow.png" crc="418153204" ref="index"/>
+    <file name="u251-4.png" crc="3758290137" ref="index"/>
+    <file name="u264-4.png" crc="82406457" ref="index"/>
+    <file name="u265-4.png" crc="130027085" ref="index"/>
+    <file name="wallpaper.png" crc="25026723" ref="index"/>
+    <file name="u277-4.png" crc="3758290137" ref="index"/>
+    <file name="u278-4.png" crc="82406457" ref="index"/>
+    <file name="u279-4.png" crc="130027085" ref="index"/>
+    <file name="thumbs_up.png" crc="502317286" ref="index"/>
+    <file name="u253-7.png" crc="189640520" ref="index"/>
+    <file name="u76-4.png" crc="4121339980" ref="index"/>
+    <file name="explore_gesture.png" crc="250954293" ref="index"/>
+    <file name="like_gesture.png" crc="4167647702" ref="index"/>
+    <file name="share_gesture.png" crc="3808779260" ref="index"/>
+    <file name="large_controller.png" crc="4196102910" ref="index"/>
+    <file name="u104-4.png" crc="493209024" ref="index"/>
+    <file name="techcrunch_disrupt.png" crc="4230555446" ref="index"/>
+    <file name="u137-8.png" crc="40872278" ref="index"/>
+    <file name="u138-4.png" crc="269087077" ref="index"/>
+    <file name="u142-4.png" crc="73757678" ref="index"/>
+    <file name="facebook.png" crc="388001214" ref="index"/>
+    <file name="twitter.png" crc="511655794" ref="index"/>
+    <file name="cedric-pinson.png" crc="536549496" ref="index"/>
+    <file name="jorge-martinez.png" crc="4124862560" ref="index"/>
+    <file name="chao.png" crc="76583258" ref="index"/>
+  </folder>
+  <file name="index.html" crc="4217396531" mt="1367143169501"/>
+</manifest>

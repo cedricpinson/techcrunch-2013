@@ -47,6 +47,7 @@ Timeline.prototype = {
             console.log("nothing selected");
         }
 
+        AppState.EntryView.init();
         AppState.switchMode('EntryView');
     },
 
