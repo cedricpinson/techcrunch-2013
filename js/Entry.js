@@ -46,7 +46,8 @@ Entry.prototype = {
         $('.overlay').show();
         $('.overlay').fadeOut(1000); //, 'easeInOutCubic');
         this._liked = true;
-        console.log("like " + txt);
+        // console.log("like " + txt);
+        leapAndTime.like();
     },
 
     goBack: function() {

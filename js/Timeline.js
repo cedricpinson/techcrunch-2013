@@ -49,6 +49,8 @@ Timeline.prototype = {
 
         AppState.EntryView.init();
         AppState.switchMode('EntryView');
+
+        leapAndTime.getObject(element.attr('data-id'), element.attr('data-type'));
     },
 
     timelineSelectItem: function(frame) {

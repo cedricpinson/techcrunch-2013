@@ -112,10 +112,7 @@ leapAndTime.getStream = function getStream() {
           AppState.TimelineView.selectCurrentItem();
         });
 
-        // Register click event for displaying object detail
-        $('.timeline-element').on('click', function (e) {
-          self.getObject($(this).attr('data-id'), $(this).attr('data-type'));
-        });
+        // Save cache
         self.items = items;
       });
     });
@@ -138,7 +135,7 @@ leapAndTime.getObject = function getObject(id, type) {
           '<div class="likes">' + (res.likes ? res.likes.data.length : 0) +'</div>' +
         '</div>' +
       '<div>';
-    $('#entry').append(html);
+    $('#entry #media').append(html);
     AppState.switchMode('EntryView');
 
     $('#entry .entry-detail').on('click', function (e) {
@@ -152,7 +149,7 @@ leapAndTime.getObject = function getObject(id, type) {
 leapAndTime.like = function like(id) {
   FB.api('/' + id + '/likes', 'post', function (res) {
     // TODO: Add feedback
-    console.log('like it');
+    console.log('Just like it');
   });
 };
 
