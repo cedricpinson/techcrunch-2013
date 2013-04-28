@@ -12,7 +12,7 @@ Entry.prototype = {
         for (var i = 0; i < nbComments; i++) {
             var url = 'data/pp.jpg';
             var com = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere massa in quam fermentum volutpat";
-            $("#entry").append(this.createElement(url, com));
+            $("#right-part").append(this.createElement(url, com));
         }
 
         var mediaURL = 'data/11.jpg';
@@ -45,7 +45,7 @@ Entry.prototype = {
         $('.overlay').text('like');
         $('.overlay').show();
         $('.overlay').fadeOut(1000); //, 'easeInOutCubic');
-        //this._liked = true;
+        this._liked = true;
         console.log("like " + txt);
     },
 
