@@ -69,6 +69,17 @@ leapAndTime.getStream = function getStream() {
           $('#timeline').append(createItemElement(item.full_picture, item.from.url, item.message));
         }
       });
+
+        // enable to click on elements if no leap motion
+        $('.timeline-element').hover(function() {
+            if ( ! $(this).hasClass("selected"))
+                $(this).addClass('selected');
+        }, function() {
+            $(this).removeClass('selected');
+        }).click(function() {
+            AppState.TimelineView.selectCurrentItem();
+        });
+
       self.items = items;
     });
   });

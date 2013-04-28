@@ -29,14 +29,14 @@ var AppState = {
             setTimeout(function() {
                 self.ViewMode = mode;
             },500);
-            $('#timeline').hide();
-            $('#entry').show();
+            $('#timeline').fadeOut(500);
+            $('#entry').fadeIn(500);
         } else if (mode === 'TimelineView') {
             setTimeout(function() {
                 self.ViewMode = mode;
             },500);
-            $('#timeline').show();
-            $('#entry').hide();
+            $('#timeline').fadeIn(500);
+            $('#entry').fadeOut(500);
         }
         this.ViewMode = 'transition';
     }
@@ -66,6 +66,7 @@ $(document).ready(function() {
         var color = "rgb(" + Math.floor(Math.random()*255) + "," + Math.floor(Math.random()*255) + ", "+ Math.floor(Math.random()*255) + ");";
         // $('#timeline').append(createItemElement('data/11.jpg', 'data/pp.jpg', 'A beautiful picture about art and stuff very cool'));
     }
+
 
     AppState.TimelineView._width = width;
     AppState.TimelineView._elementWidth = elementWidth;

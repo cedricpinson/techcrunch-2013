@@ -41,7 +41,6 @@ Timeline.prototype = {
         }
 
         AppState.switchMode('EntryView');
-
     },
 
     timelineSelectItem: function(frame) {
