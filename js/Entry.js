@@ -24,6 +24,10 @@ Entry.prototype = {
         console.log("like " + txt);
     },
 
+    goBack: function() {
+        AppState.switchMode('TimelineView');
+    },
+
     checkGestures: function(frame) {
 
         var deltaFrame = previousFrame.translation(frame);
@@ -46,6 +50,9 @@ Entry.prototype = {
                     var type = gestures[i].type;
                     if (type === "circle" && gestures[i].radius > this._radiusShare) {
                         this.share(gestures[i].radius);
+                    } else if (type === "keyTap" || type === "screenTap") {
+                        this.goBack();
+                        return;
                     }
                 }
             }

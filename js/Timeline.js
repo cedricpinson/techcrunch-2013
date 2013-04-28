@@ -50,11 +50,12 @@ Timeline.prototype = {
         if (gestures.length > 0 ) {
             for (var i = 0; i < gestures.length; i++) {
                 //console.log(gestures[i].type);
-                console.log(gestures[i].type);
                 var type = gestures[i].type;
                 if (type === "keyTap" || type === "screenTap") {
                     this.selectCurrentItem();
-                    //break;
+                    break;
+                } else if (type === "swipe") {
+                    console.log("swipe " + gestures[i].direction);
                 }
             }
         }
