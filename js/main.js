@@ -13,23 +13,32 @@ var AppState = {
     TimelineView: undefined,
     EntryView: undefined,
     update: function(frame) {
-        this[this.ViewMode].update(frame);
+        if (this[this.ViewMode] && this[this.ViewMode].update)
+            this[this.ViewMode].update(frame);
     },
     render: function() {
-        this[this.ViewMode].render();
+        if (this[this.ViewMode] && this[this.ViewMode].render)
+            this[this.ViewMode].render();
     },
     switchMode: function(mode) {
         if (mode === this.ViewMode) {
             return;
         }
+        var self = this;
         if (mode === 'EntryView') {
-            this.ViewMode = mode;
+            setTimeout(function() {
+                self.ViewMode = mode;
+            },500);
             $('#timeline').hide();
             $('#entry').show();
         } else if (mode === 'TimelineView') {
+            setTimeout(function() {
+                self.ViewMode = mode;
+            },500);
             $('#timeline').show();
             $('#entry').hide();
         }
+        this.ViewMode = 'transition';
     }
 };
 
