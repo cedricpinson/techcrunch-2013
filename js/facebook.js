@@ -156,6 +156,20 @@ leapAndTime.like = function like(id) {
   });
 };
 
+// Hide Login button
+// -----------------
+leapAndTime.hideLoginBtn = function () {
+  $('#fb-login').hide();
+  return this;
+};
+
+// Enable click login instead of auto login
+$(document).ready(function () {
+  $('#fb-login').on('click', function (e) {
+    leapAndTime.hideLoginBtn().login();
+  });
+});
+
 // Facebook Login
 // --------------
 window.fbAsyncInit = function() {
@@ -172,13 +186,13 @@ window.fbAsyncInit = function() {
     if (res.status === 'connected') {
       // connected
       // document.getElementById('fb-logout').style.display = 'block';
-      leapAndTime.getStream();
+      leapAndTime.hideLoginBtn().getStream();
     } else if (res.status === 'not_authorized') {
       // not_authorized
-      leapAndTime.login();
+      // leapAndTime.login();
     } else {
       // not_logged_in
-      leapAndTime.login();
+      // leapAndTime.login();
       // document.getElementById('fb-logout').style.display = 'block';
     }
   });
