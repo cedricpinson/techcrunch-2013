@@ -65,6 +65,16 @@ $(document).ready(function() {
 
 
     var controller = new Leap.Controller({enableGestures: 'swipe'});
+    controller.on('ready', function() {
+        window.LeapMotionReady = true;
+        console.log('ready');
+    });
+    setTimeout(function() {
+        // check leap motion is ok
+        if (!window.LeapMotionReady) {
+            console.log('leap motion not ready');
+        }
+    }, 1000);
     controller.loop(function(frame) {
         if (!previousFrame)
             previousFrame = frame;
