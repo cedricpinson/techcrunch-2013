@@ -51,7 +51,7 @@ $(document).ready(function() {
         return '<div class="timeline-element"><img src="' + media +'"><br>'+  '<div class="avatar"><img src="' + imageAvatar + '"></div> <div class="description">' + description + '</div></div>';
     };
 
-    var elementWidth = 800;
+    var elementWidth = 840;
     // initalize timeline
     AppState.TimelineView = new Timeline();
     AppState.EntryView = new Entry();
