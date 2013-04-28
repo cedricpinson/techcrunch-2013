@@ -16,18 +16,32 @@
 		margin: 0px;
 		padding: 0px;
 		background: #252525;
-		width: 4000px;
 	}
   	#timeline {
   		margin-top: 60px;
   		margin-left: 60px;
-        transition: all 1s ease-out;
-        
+        -webkit-transition: opacity 2s;
     }
 
     #entry {
+        position:absolute;
+        -webkit-transition: opacity 2s;
         display: none;
     }
+
+        .overlay { 
+        font-size: 300px;
+        width: 800px;
+        left: 50%;
+        top: 50%;
+        text-color: white;
+        margin-left: -400px;
+        margin-top: -250px;
+        position:fixed;
+        text-align: center;
+        display: none;
+        z-index: 1;
+        }
 
     .timeline-element {
     	margin: 20px 80px;
@@ -75,6 +89,10 @@
   </head>
   <body>
     <!-- <button id="fb-logout" onClick="leapAndTime.logout()">Log out</button> -->
+    <div>
+      <div id="js-like" class="overlay">share
+      </div>
+    </div>
     <div id="fb-root"></div>
     <div id="timeline">
     </div>

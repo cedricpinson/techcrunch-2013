@@ -37,6 +37,11 @@ var AppState = {
             },500);
             $('#timeline').fadeIn(500);
             $('#entry').fadeOut(500);
+
+            this.TimelineView._virtualCursor = this.TimelineView._targetPosition;
+            $('html, body').scrollLeft(this.TimelineView._virtualCursor);
+            this.TimelineView._lastTime = undefined;
+
         }
         this.ViewMode = 'transition';
     }
@@ -61,6 +66,7 @@ $(document).ready(function() {
     var nb = 25;
     width = nb*elementWidth;
     $('#timeline').width(width);
+    $('#timeline').height(window.innerHeight);
 
 
     AppState.TimelineView._width = width;

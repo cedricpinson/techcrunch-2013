@@ -5,6 +5,7 @@ var Timeline = function() {
     this._selected = undefined;
     this._width = 8192;
     this._elementWidth = 800;
+    this._lastTime;
 };
 
 Timeline.prototype = {
@@ -17,15 +18,21 @@ Timeline.prototype = {
     },
 
     leapGetPosition: function(frame) {
+        var t = new Date().getTime();
+        if (!this._lastTime) {
+            this._lastTime = t;
+        }
+        var dt = t-this._lastTime;
+        this._lastTime = t;
+
         var deltaFrame = previousFrame.translation(frame);
 
-        //console.log(deltaFrame[1]);
-        var motion = deltaFrame[0]*5.0;
+        var motion = deltaFrame[0]*dt;
         this._targetPosition += motion;
         this._targetPosition = this.clampMotion(this._targetPosition);
 
         // we should take care about the page size for the smooth stop of the scroll
-        var displacement = (this._targetPosition - this._virtualCursor) * 0.03;
+        var displacement = (this._targetPosition - this._virtualCursor) * dt/500.0;
         this._virtualCursor += displacement;
         
         this._virtualCursor = this.clampMotion(this._virtualCursor);

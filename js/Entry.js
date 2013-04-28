@@ -15,11 +15,17 @@ Entry.prototype = {
     },
 
     share: function(txt) {
+        $('.overlay').text('share');
+        $('.overlay').show();
+        $('.overlay').fadeOut(1000); //, 'easeInOutCubic');
         //this._shared = true;
         console.log("share " + txt);
     },
 
     like: function(txt) {
+        $('.overlay').text('like');
+        $('.overlay').show();
+        $('.overlay').fadeOut(1000); //, 'easeInOutCubic');
         //this._liked = true;
         console.log("like " + txt);
     },
